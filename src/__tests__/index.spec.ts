@@ -25,6 +25,8 @@ describe('gitMeta', () => {
       'buildDate',
       'commit',
       'commitDate',
+      'commitsSinceTag',
+      'dirty',
       'displayVersion',
       'shortCommit',
       'tag',

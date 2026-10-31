@@ -7,6 +7,8 @@ export const DEFAULT_COMMANDS = {
   commit: 'git rev-parse HEAD',
   shortCommit: 'git rev-parse --short HEAD',
   commitDate: 'git log -1 --format=%cd --date=iso',
+  describe: 'git describe --tags --long',
+  dirty: 'git status --porcelain',
 } as const satisfies Record<GitCommandName, string>
 
 export type CommandRunner = (command: string, cwd: string) => string | null
@@ -62,6 +64,13 @@ function envTag(env: Env) {
   return firstEnv(env, ENV_TAG) ?? githubRef(env, 'tag')
 }
 
+/** Reads N out of `git describe --tags --long` (`v1.2.0-3-gabc1234`). */
+function parseCommitsSinceTag(describe: string | null) {
+  const match = describe?.match(/-(\d+)-g[0-9a-f]+$/)
+
+  return match ? Number(match[1]) : null
+}
+
 export function collectGitMeta(
   options: GitMetaOptions = {},
   cwd = process.cwd(),
@@ -82,6 +91,8 @@ export function collectGitMeta(
     shortCommit: read('shortCommit') ?? commit?.slice(0, SHORT_COMMIT_LENGTH) ?? 'unknown',
     commitDate: read('commitDate') ?? new Date().toISOString(),
     buildDate: new Date().toISOString(),
+    dirty: read('dirty') !== null,
+    commitsSinceTag: parseCommitsSinceTag(read('describe')),
   }
 
   const displayVersion = options.displayVersion

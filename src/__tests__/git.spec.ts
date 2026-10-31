@@ -46,6 +46,8 @@ describe('collectGitMeta', () => {
       [DEFAULT_COMMANDS.commit]: 'abcdef1234567890',
       [DEFAULT_COMMANDS.shortCommit]: 'abcdef1',
       [DEFAULT_COMMANDS.commitDate]: '2025-12-31 10:00:00 +0100',
+      [DEFAULT_COMMANDS.describe]: 'v1.2.3-0-gabcdef1',
+      [DEFAULT_COMMANDS.dirty]: ' M src/index.ts',
     })
 
     expect(collectGitMeta({ version: '1.2.3' }, '/repo', run)).toEqual({
@@ -57,6 +59,8 @@ describe('collectGitMeta', () => {
       displayVersion: 'v1.2.3',
       commitDate: '2025-12-31 10:00:00 +0100',
       buildDate: '2026-01-02T03:04:05.000Z',
+      dirty: true,
+      commitsSinceTag: 0,
     })
   })
 
@@ -82,7 +86,20 @@ describe('collectGitMeta', () => {
       shortCommit: 'unknown',
       displayVersion: 'unknown#unknown',
       commitDate: '2026-01-02T03:04:05.000Z',
+      dirty: false,
+      commitsSinceTag: null,
     })
+  })
+
+  test('counts the commits since the nearest tag', () => {
+    const run = runnerFrom({ [DEFAULT_COMMANDS.describe]: 'v1.2.0-3-gabc1234' })
+
+    expect(collectGitMeta({}, '/repo', run).commitsSinceTag).toBe(3)
+  })
+
+  test('has no commit count when describe fails or is not parseable', () => {
+    expect(collectGitMeta({}, '/repo', () => null).commitsSinceTag).toBeNull()
+    expect(collectGitMeta({}, '/repo', runnerFrom({ [DEFAULT_COMMANDS.describe]: 'weird' })).commitsSinceTag).toBeNull()
   })
 
   test('takes the version from the option, then npm_package_version, then 0.0.0', () => {

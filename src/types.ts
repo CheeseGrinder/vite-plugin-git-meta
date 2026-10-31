@@ -7,9 +7,13 @@ export interface GitMeta {
   displayVersion: string
   commitDate: string
   buildDate: string
+  /** Whether the working tree has uncommitted changes (false when git is unavailable). */
+  dirty: boolean
+  /** Commits since the nearest tag, 0 on a tag, `null` when there is no tag or no git. */
+  commitsSinceTag: number | null
 }
 
-export type GitCommandName = 'branch' | 'tag' | 'commit' | 'shortCommit' | 'commitDate'
+export type GitCommandName = 'branch' | 'tag' | 'commit' | 'shortCommit' | 'commitDate' | 'describe' | 'dirty'
 
 export interface GitMetaOptions {
   /** Directory the git commands run in. Defaults to the Vite root, then `process.cwd()`. */
