@@ -34,6 +34,8 @@ describe('collectGitMeta against a real repository', () => {
     expect(meta.tag).toBeNull()
     expect(meta.commit).toBe(git('rev-parse HEAD'))
     expect(meta.displayVersion).toBe(`trunk#${git('rev-parse --short HEAD')}`)
+    expect(meta.commitsSinceTag).toBeNull()
+    expect(meta.dirty).toBe(false)
   })
 
   test('uses the tag once HEAD is tagged', () => {
@@ -43,13 +45,32 @@ describe('collectGitMeta against a real repository', () => {
 
     expect(meta.tag).toBe('v1.0.0')
     expect(meta.displayVersion).toBe('v1.0.0')
+    expect(meta.commitsSinceTag).toBe(0)
+  })
+
+  test('counts commits past the tag and flags uncommitted changes', () => {
+    writeFileSync(join(repo, 'b.txt'), 'b')
+    git('add .')
+    git('commit -q -m second')
+
+    expect(collectGitMeta({}, repo)).toMatchObject({ tag: null, commitsSinceTag: 1, dirty: false })
+
+    writeFileSync(join(repo, 'b.txt'), 'changed')
+
+    expect(collectGitMeta({}, repo).dirty).toBe(true)
+
+    git('checkout -q -- b.txt')
   })
 
   test('falls back outside a repository', () => {
     const empty = mkdtempSync(join(tmpdir(), 'git-meta-empty-'))
 
     try {
-      expect(collectGitMeta({}, empty)).toMatchObject({ branch: 'unknown', commit: 'unknown', tag: null })
+      expect(collectGitMeta({}, empty, undefined, {})).toMatchObject({
+        branch: 'unknown',
+        commit: 'unknown',
+        tag: null,
+      })
     } finally {
       rmSync(empty, { recursive: true, force: true })
     }

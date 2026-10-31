@@ -1,14 +1,8 @@
 import { resolve } from 'node:path'
-import type { ConfigEnv, Plugin, UserConfig } from 'vite'
 import { describe, expect, test, vi } from 'vitest'
 import * as git from '../git.js'
 import { gitMeta } from '../index.js'
-
-function runConfig(plugin: Plugin, userConfig: UserConfig = {}) {
-  const hook = plugin.config as (config: UserConfig, env: ConfigEnv) => UserConfig
-
-  return hook(userConfig, { command: 'build', mode: 'production' })
-}
+import { runConfig } from './helpers.js'
 
 describe('gitMeta', () => {
   test('has a stable name', () => {
@@ -25,6 +19,8 @@ describe('gitMeta', () => {
       'buildDate',
       'commit',
       'commitDate',
+      'commitsSinceTag',
+      'dirty',
       'displayVersion',
       'shortCommit',
       'tag',

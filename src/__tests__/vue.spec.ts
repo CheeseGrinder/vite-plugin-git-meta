@@ -12,6 +12,8 @@ const meta = {
   displayVersion: 'main#a',
   commitDate: '2026-01-01',
   buildDate: '2026-01-02',
+  dirty: false,
+  commitsSinceTag: null,
 } satisfies GitMeta
 
 describe('GitMetaPlugin', () => {

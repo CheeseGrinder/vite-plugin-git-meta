@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`vite-plugin-git-meta` is a small Vite plugin that reads git metadata (branch, tag, commit, dates) when Vite loads its config and injects it into the app as the global constant `__GIT_META__`. A second entry point, `vite-plugin-git-meta/vue`, exposes the same data to Vue 3 apps (`$git`, `useGitMeta()`).
+`vite-plugin-git-meta` is a small Vite plugin that reads git metadata (branch, tag, commit, dates, dirty state) when Vite loads its config, falls back to the CI environment when git has no answer, and injects it into the app as the global constant `__GIT_META__`. A second entry point, `vite-plugin-git-meta/vue`, exposes the same data to Vue 3 apps (`$git`, `useGitMeta()`).
 
 The behavior is specified in [docs/specs/](docs/specs/README.md). Read the relevant spec before changing behaviour, and update it in the same change.
 
@@ -28,6 +28,7 @@ src/
   types.ts   # GitMeta, GitMetaOptions, global __GIT_META__ declaration
   git.ts     # DEFAULT_COMMANDS, runCommand, collectGitMeta (pure logic)
   index.ts   # the Vite plugin gitMeta() and the public re-exports
+  watch.ts   # git directory watcher used by the dev server refresh
   vue.ts     # GitMetaPlugin, useGitMeta, GIT_META_KEY ($git typing)
   __tests__/ # unit + integration specs
 ```
