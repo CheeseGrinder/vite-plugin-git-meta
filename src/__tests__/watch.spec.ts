@@ -8,7 +8,7 @@ import { hasGitStateChanged, resolveGitDir, watchGitState } from '../watch.js'
 
 const meta = collectGitMeta({}, '/nowhere', () => null, {})
 
-describe('hasGitStateChanged', () => {
+describe('git state watching', () => {
   test('is true when the commit, branch or tag moved', () => {
     expect(hasGitStateChanged(meta, { ...meta, commit: 'other' })).toBe(true)
     expect(hasGitStateChanged(meta, { ...meta, branch: 'other' })).toBe(true)
@@ -20,9 +20,7 @@ describe('hasGitStateChanged', () => {
 
     expect(hasGitStateChanged(meta, next)).toBe(false)
   })
-})
 
-describe('watching a real repository', () => {
   let repo = ''
 
   function git(args: string) {
