@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/CheeseGrinder/vite-plugin-git-meta/compare/vite-plugin-git-meta-v0.2.0...vite-plugin-git-meta-v0.2.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* stop the git watcher when the dev server closes ([#9](https://github.com/CheeseGrinder/vite-plugin-git-meta/issues/9)) ([a45c18f](https://github.com/CheeseGrinder/vite-plugin-git-meta/commit/a45c18f1b986cf3462ef5f9f84cb326008a66a73))
+
 ## [0.2.0](https://github.com/CheeseGrinder/vite-plugin-git-meta/compare/vite-plugin-git-meta-v0.1.0...vite-plugin-git-meta-v0.2.0) (2026-10-31)
 
 
