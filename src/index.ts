@@ -2,6 +2,7 @@ import { resolve } from 'node:path'
 import type { Plugin } from 'vite'
 import { collectGitMeta } from './git.js'
 import type { GitMeta, GitMetaOptions } from './types.js'
+import { hasGitStateChanged, resolveGitDir, watchGitState } from './watch.js'
 
 const DEFAULT_VERSION_FILE = 'version.json'
 
@@ -15,12 +16,13 @@ function resolveVersionFile(option: GitMetaOptions['versionFile']) {
 
 export function gitMeta(options: GitMetaOptions = {}): Plugin {
   const versionFile = resolveVersionFile(options.versionFile)
+  let cwd = process.cwd()
   let meta: GitMeta | undefined
 
   return {
     name: 'vite-plugin-git-meta',
     config(userConfig) {
-      const cwd = options.cwd ?? resolve(userConfig.root ?? process.cwd())
+      cwd = options.cwd ?? resolve(userConfig.root ?? process.cwd())
 
       meta = collectGitMeta(options, cwd)
 
@@ -31,20 +33,36 @@ export function gitMeta(options: GitMetaOptions = {}): Plugin {
       }
     },
     configureServer(server) {
-      if (!versionFile) {
+      if (versionFile) {
+        const url = `${server.config.base}${versionFile}`
+
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.split('?')[0] !== url) {
+            return next()
+          }
+
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(meta, null, 2))
+        })
+      }
+
+      const gitDir = resolveGitDir(cwd)
+
+      if (!gitDir) {
         return
       }
 
-      const url = `${server.config.base}${versionFile}`
+      // The metadata is baked into `define` when the config loads, so a new commit needs a restart.
+      const stop = watchGitState(gitDir, () => {
+        const next = collectGitMeta(options, cwd)
 
-      server.middlewares.use((req, res, next) => {
-        if (req.url?.split('?')[0] !== url) {
-          return next()
+        if (meta && hasGitStateChanged(meta, next)) {
+          server.config.logger.info('git state changed, restarting the dev server', { timestamp: true })
+          void server.restart()
         }
-
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify(meta, null, 2))
       })
+
+      server.httpServer?.once('close', stop)
     },
     generateBundle() {
       if (!versionFile) {
