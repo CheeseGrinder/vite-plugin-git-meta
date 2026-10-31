@@ -62,7 +62,7 @@ Not a per-run choice. A pre-release line is configured in `release-please-config
 ## Setup (once)
 
 1. Repository settings, Actions, General: enable **Allow GitHub Actions to create and approve pull requests**.
-2. Add the `NPM_TOKEN` secret (an npm automation token able to publish the package).
+2. On npmjs.com, package Settings, Trusted Publisher, GitHub Actions: organization `CheeseGrinder`, repository `vite-plugin-git-meta`, workflow `release.yml`, environment left empty, and tick **Allow npm publish**. No npm token is stored: the `publish` job authenticates with the workflow's OIDC identity (`id-token: write`), which also gives the package its provenance. It needs npm 11.5.1 or later, which Node 24 ships.
 3. Optional: add a `RELEASE_PLEASE_TOKEN` secret (a fine-grained PAT or a GitHub App token with contents and pull-requests write). Without it, the release PR is opened with `GITHUB_TOKEN` and `ci.yml` and `preview.yml` do not run on it. With it, they do.
 4. Optional: set the repository's merge button to squash only.
 
