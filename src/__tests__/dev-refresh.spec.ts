@@ -12,7 +12,6 @@ describe('gitMeta dev refresh', () => {
     const server = {
       config: { base: '/', logger: { info: vi.fn<(message: string) => void>() } },
       middlewares: { use: vi.fn<() => void>() },
-      httpServer: { once: vi.fn<(event: string, listener: () => void) => void>() },
       restart,
     }
     let onChange: () => void = () => {}
@@ -27,7 +26,7 @@ describe('gitMeta dev refresh', () => {
     const config = runConfig(plugin)
     ;(plugin.configureServer as (server: unknown) => void)(server)
 
-    return { server, restart, close, meta: JSON.parse(config.define!.__GIT_META__), trigger: () => onChange() }
+    return { restart, close, meta: JSON.parse(config.define!.__GIT_META__), trigger: () => onChange() }
   }
 
   afterEach(() => {
@@ -51,13 +50,11 @@ describe('gitMeta dev refresh', () => {
     expect(restart).not.toHaveBeenCalled()
   })
 
-  test('stops watching when the dev server closes', () => {
-    const { server, close } = startServer(gitMeta())
-    const [event, listener] = server.httpServer.once.mock.calls[0] ?? []
-
-    expect(event).toBe('close')
-
-    listener?.()
+  test('stops watching when the dev server closes, even without an HTTP server', () => {
+    const plugin = gitMeta()
+    const { close } = startServer(plugin)
+    ;(plugin.closeBundle as () => void)()
+    ;(plugin.closeBundle as () => void)()
 
     expect(close).toHaveBeenCalledOnce()
   })
