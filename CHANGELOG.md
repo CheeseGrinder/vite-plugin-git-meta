@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/CheeseGrinder/vite-plugin-git-meta/compare/vite-plugin-git-meta-v0.1.0...vite-plugin-git-meta-v0.2.0) (2026-10-31)
+
+
+### Features
+
+* CI env fallback, dirty state, version file and dev refresh ([#6](https://github.com/CheeseGrinder/vite-plugin-git-meta/issues/6)) ([74af6e6](https://github.com/CheeseGrinder/vite-plugin-git-meta/commit/74af6e6d1eb08fa0f515ff0fbc96c152de477fe6))
+
 ## 0.1.0 (2026-10-31)
 
 
