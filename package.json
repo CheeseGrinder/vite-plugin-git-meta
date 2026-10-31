@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-git-meta",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Vite plugin that injects git metadata (branch, tag, commit, dates) at build time, with an optional typed Vue 3 plugin.",
   "keywords": [
     "vite",
