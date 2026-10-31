@@ -66,7 +66,11 @@ describe('collectGitMeta against a real repository', () => {
     const empty = mkdtempSync(join(tmpdir(), 'git-meta-empty-'))
 
     try {
-      expect(collectGitMeta({}, empty)).toMatchObject({ branch: 'unknown', commit: 'unknown', tag: null })
+      expect(collectGitMeta({}, empty, undefined, {})).toMatchObject({
+        branch: 'unknown',
+        commit: 'unknown',
+        tag: null,
+      })
     } finally {
       rmSync(empty, { recursive: true, force: true })
     }
