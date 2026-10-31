@@ -18,6 +18,7 @@ export function gitMeta(options: GitMetaOptions = {}): Plugin {
   const versionFile = resolveVersionFile(options.versionFile)
   let cwd = process.cwd()
   let meta: GitMeta | undefined
+  let stopWatching = () => {}
 
   return {
     name: 'vite-plugin-git-meta',
@@ -53,7 +54,7 @@ export function gitMeta(options: GitMetaOptions = {}): Plugin {
       }
 
       // The metadata is baked into `define` when the config loads, so a new commit needs a restart.
-      const stop = watchGitState(gitDir, () => {
+      stopWatching = watchGitState(gitDir, () => {
         const next = collectGitMeta(options, cwd)
 
         if (meta && hasGitStateChanged(meta, next)) {
@@ -61,8 +62,10 @@ export function gitMeta(options: GitMetaOptions = {}): Plugin {
           void server.restart()
         }
       })
-
-      server.httpServer?.once('close', stop)
+    },
+    closeBundle() {
+      stopWatching()
+      stopWatching = () => {}
     },
     generateBundle() {
       if (!versionFile) {
