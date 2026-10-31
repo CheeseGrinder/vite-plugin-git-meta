@@ -8,10 +8,13 @@ flowchart LR
     types["types.ts<br/>GitMeta, GitMetaOptions,<br/>global __GIT_META__"]
     git["git.ts<br/>collectGitMeta,<br/>DEFAULT_COMMANDS, runCommand"]
     index["index.ts<br/>gitMeta() Vite plugin"]
+    watch["watch.ts<br/>watchGitState, hasGitStateChanged"]
     vue["vue.ts<br/>GitMetaPlugin, useGitMeta"]
   end
 
   index --> git
+  index --> watch
+  watch --> git
   index --> types
   git --> types
   vue --> types
@@ -23,7 +26,7 @@ flowchart LR
 Dependency rules:
 
 1. `git.ts` has no Vite and no Vue import. It receives a `CommandRunner`, which makes it testable without git.
-2. `index.ts` is a thin Vite wrapper: it resolves the working directory and calls `collectGitMeta`.
+2. `index.ts` is a thin Vite wrapper: it resolves the working directory, calls `collectGitMeta`, emits or serves the version file and restarts the dev server through `watch.ts`.
 3. `vue.ts` is the only file importing `vue`, an optional peer dependency. `index.ts` and `git.ts` must never import it.
 
 ## Data flow
@@ -42,7 +45,7 @@ sequenceDiagram
   V->>P: config(userConfig)
   P->>P: cwd = options.cwd ?? root ?? process.cwd()
   P->>C: collectGitMeta(options, cwd)
-  loop branch, tag, commit, shortCommit, commitDate
+  loop branch, tag, commit, shortCommit, commitDate, describe, dirty
     C->>G: run command in cwd
     G-->>C: stdout, or failure
   end

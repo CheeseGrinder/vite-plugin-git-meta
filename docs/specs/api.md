@@ -6,12 +6,17 @@ Everything below is public. Any other export or file is internal and may change.
 
 ```ts
 export function gitMeta(options?: GitMetaOptions): Plugin // also the default export
-export function collectGitMeta(options?: GitMetaOptions, cwd?: string, run?: CommandRunner): GitMeta
+export function collectGitMeta(
+  options?: GitMetaOptions,
+  cwd?: string,
+  run?: CommandRunner,
+  env?: Record<string, string | undefined>,
+): GitMeta
 export const DEFAULT_COMMANDS: Record<GitCommandName, string>
 export type { GitCommandName, GitMeta, GitMetaOptions }
 ```
 
-`gitMeta()` is the way to use the package. `collectGitMeta` and `DEFAULT_COMMANDS` are exported for scripts and tests that want the same data outside Vite (for example a `postbuild` step writing a `version.json`).
+`gitMeta()` is the way to use the package. `collectGitMeta` and `DEFAULT_COMMANDS` are exported for scripts and tests that want the same data outside Vite (for example a script that prints the version before a build).
 
 ### `GitMeta`
 
@@ -25,6 +30,8 @@ interface GitMeta {
   displayVersion: string
   commitDate: string
   buildDate: string
+  dirty: boolean
+  commitsSinceTag: number | null
 }
 ```
 
@@ -38,8 +45,11 @@ Field semantics and fallbacks: [behavior](behavior.md).
 | `version`        | `string`                                            | `npm_package_version`, then `'0.0.0'` |
 | `commands`       | `Partial<Record<GitCommandName, string>>`           | `DEFAULT_COMMANDS`                    |
 | `displayVersion` | `(meta: Omit<GitMeta, 'displayVersion'>) => string` | tag, else `branch#shortCommit`        |
+| `versionFile`    | `boolean                                            | string`                               | `false` |
 
-`GitCommandName` is `'branch' | 'tag' | 'commit' | 'shortCommit' | 'commitDate'`. `commands` entries are merged over the defaults: giving only `tag` keeps the other four.
+`GitCommandName` is `'branch' | 'tag' | 'commit' | 'shortCommit' | 'commitDate' | 'describe' | 'dirty'`. `commands` entries are merged over the defaults: giving only `tag` keeps the others.
+
+`versionFile`: `true` emits the metadata as `version.json` at build and serves it at that URL in dev, a string sets the file name (a leading slash is dropped).
 
 ### Global constant
 
