@@ -1,0 +1,46 @@
+name: Bug report
+description: Something does not work as the specs or the README describe
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Your `gitMeta(...)` options and `vite.config`, or a link to a minimal repository.
+      render: ts
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Actual `__GIT_META__` value
+      description: The injected object, and the output of the git command you think is wrong.
+      render: json
+  - type: input
+    id: version
+    attributes:
+      label: vite-plugin-git-meta version
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Vite, Vue, Node and git versions
+      placeholder: vite 7.3, vue 3.5, node 24, git 2.45
+    validations:
+      required: true
+  - type: dropdown
+    id: ci
+    attributes:
+      label: Where does it happen
+      options:
+        - Locally
+        - In CI (shallow clone, detached HEAD...)
+        - Both

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://dprint.dev/schemas/v0.json",
+  "lineWidth": 120,
+  "indentWidth": 2,
+  "useTabs": false,
+  "newLineKind": "lf",
+  "typescript": {
+    "quoteStyle": "alwaysSingle",
+    "semiColons": "asi",
+    "typeLiteral.separatorKind": "comma",
+    "trailingCommas": "onlyMultiLine",
+    "arrowFunction.useParentheses": "preferNone",
+    "operatorPosition": "maintain"
+  },
+  "json": {},
+  "markdown": {
+    "textWrap": "maintain"
+  },
+  "excludes": [
+    "**/node_modules",
+    "**/*lock*",
+    "dist/",
+    "CHANGELOG.md"
+  ],
+  "plugins": [
+    "npm:@dprint/typescript@0.96.1",
+    "npm:@dprint/json@0.23.0",
+    "npm:@dprint/markdown@0.23.1"
+  ]
+}

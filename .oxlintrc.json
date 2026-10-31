@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "typescript", "oxc", "vitest"],
+  "env": {
+    "node": true,
+    "es2024": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "ignorePatterns": ["dist/", "node_modules/"],
+  "rules": {
+    "no-param-reassign": "error",
+    "default-param-last": "error",
+    "one-var": ["error", "never"],
+    "no-else-return": "error",
+    "prefer-number-properties": "error",
+    "typescript/no-inferrable-types": "error",
+    "typescript/prefer-as-const": "error",
+    "typescript/prefer-enum-initializers": "error",
+    "no-console": "off",
+    "no-shadow": "off",
+    "no-underscore-dangle": "off"
+  }
+}
